@@ -35,5 +35,47 @@ public class ExamplePlugin extends Plugin {
             gameOverFuture.cancel(false);
         });
     }
+
+    @Override
+    public void registerClientCommands(CommandHandler handler) {
+        //handler.<Player>register("reply", "<text...>", "A simple ping command that echoes a player's text.", (args, player) -> {
+        //player.sendMessage("You said: [accent] " + args[0]);
+        //});
+        handler.<Player>register("greetNeko", "A command that greets Neko Shark.", (args, player) -> {
+            player.sendMessage("Hi Neko!!!");
+        });
+        handler.<Player>register("kick", "<player> <reason...>", "Kick someone.", (args, player) -> {
+            String defaultStart = "[blue][Mod-Command]:[] ";
+            if (!player.admin) {
+                player.sendMessage(defaultStart + "You do not have enough permission to run this command.");
+                return;
+            }
+            String playerName = args[0].replace("/_", " ");
+            Player toKick = Groups.player.find(p -> Strings.stripColors(p.name).equalsIgnoreCase(playerName));
+            if (toKick == null) {
+                player.sendMessage(defaultStart + "Unable to find the player " + args[0]);
+                return;
+            }
+            toKick.kick(args[1]);
+        });
+        handler.<Player>register("ban", "<player>", "Ban a player.", (args, player) -> {
+            String defaultStart = "[blue][Mod-Command]:[] ";
+            if (!player.admin) {
+                player.sendMessage(defaultStart + "You do not have enough permission to run this command.");
+                return;
+            }
+            String playerName = args[0].replace("/_", " ");
+            Player toBan = Groups.player.find(p -> Strings.stripColors(p.name).equalsIgnoreCase(playerName));
+
+            if (toBan == null) {
+                player.sendMessage(defaultStart + "Unable to find the player " + args[0]);
+                return;
+            }
+            toBan.kick(Packets.KickReason.banned);
+        });
+        handler.<Player>register("team", "<team>", "Change your team by int.", (args, player) -> {
+            Team toTeam = Team.get(Integer.parseInt(args[0]));
+            player.team(toTeam);
+        });
+    }
 }
- // just some random stuff
